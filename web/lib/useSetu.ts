@@ -130,7 +130,7 @@ export function useSetu() {
         store.appendAudit(rec.author, "create_record", rec.person_record_id, {
           consent_match: rec.consent_match,
         });
-        const matches = searchCandidates(rec, store.allPersons(), { limit: 6 });
+        const matches = searchCandidates(rec, store.allPersons(), { limit: 6, useFace: false });
         refresh();
         return { record: rec, matches, buffered: false };
       }
@@ -171,7 +171,7 @@ export function useSetu() {
   );
 
   const matchesFor = useCallback(
-    (rec: PersonRecord) => searchCandidates(rec, store.allPersons(), { limit: 6 }),
+    (rec: PersonRecord) => searchCandidates(rec, store.allPersons(), { limit: 6, useFace: false }),
     [store],
   );
 

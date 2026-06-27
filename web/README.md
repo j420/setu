@@ -19,6 +19,28 @@ reference; this engine is independently verified by its own test suite.
   name-optional intake, the multilingual PA console, dedup view, hotspot
   heatmap, and an online/offline toggle (store-and-forward).
 
+### Real-time inputs
+
+Intake accepts live inputs on this node and matches instantly:
+- **Voice input** — a 🎤 button uses the browser Web Speech API to dictate the
+  free-text field (Bhashini ASR is the production swap). Graceful fallback to
+  typing where unsupported.
+- **Photo capture** — upload or take a photo (camera) at intake for *found*
+  persons, with explicit consent. Photos are downscaled client-side and stored
+  only in the local record (auto-purged on reunion).
+
+### Server-side photo verification (handover step)
+
+At the human verification step, the operator can compare the **found record's
+photo** against a **family-provided photo**. The comparison runs **server-side**
+at `POST /api/verify-face` (`app/api/verify-face/route.ts` + `lib/faceServer.ts`):
+it decodes the real pixels, computes a similarity, and returns a score. It is
+**stateless** — no database, no file write, no searchable index (honors "no
+standing biometric database") — and the score is **advisory only**: it can never
+confirm a handover; a human still does. The current comparator is a perceptual
+face-shaped stand-in over real pixels; **ArcFace/InsightFace is the drop-in
+production swap behind the same request/response contract.**
+
 ### Live data only — no seed, no random data
 
 The deployed app starts **empty**. The queue, dedup view, heatmap and metrics

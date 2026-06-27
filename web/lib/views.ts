@@ -18,7 +18,7 @@ export function buildQueue(persons: PersonRecord[], max = 12): QueueItem[] {
   const items: QueueItem[] = [];
   const seen = new Set<string>();
   for (const q of missing) {
-    const cs = searchCandidates(q, persons, { limit: 1 });
+    const cs = searchCandidates(q, persons, { limit: 1, useFace: false });
     for (const c of cs) {
       if (c.disposition !== "queue") continue;
       const key = [q.person_record_id, c.record.person_record_id].sort().join("|");

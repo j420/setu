@@ -13,6 +13,13 @@ import {
 import { IntakeInput } from "@/lib/useSetu";
 import { Empty, Pill, SectionTitle } from "./ui";
 import { centerOf, shortId } from "@/lib/views";
+import { PhotoCapture } from "./PhotoCapture";
+
+// Web Speech API (real-time voice input) — progressive enhancement.
+function getSpeech(): any {
+  if (typeof window === "undefined") return null;
+  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
+}
 
 const EMPTY: IntakeInput = {
   center: "ramkund",
@@ -35,15 +42,42 @@ export function IntakeForm({
   onCreate: (input: IntakeInput) => { record: PersonRecord; matches: Candidate[]; buffered: boolean };
 }) {
   const [form, setForm] = useState<IntakeInput>(EMPTY);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [photoConsent, setPhotoConsent] = useState(false);
+  const [listening, setListening] = useState(false);
   const [result, setResult] = useState<{ record: PersonRecord; matches: Candidate[]; buffered: boolean } | null>(null);
 
   function set<K extends keyof IntakeInput>(k: K, v: IntakeInput[K]) {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
+  function dictate() {
+    const SR = getSpeech();
+    if (!SR) {
+      alert("Voice input isn't supported in this browser. Please type instead.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "hi-IN"; // multilingual intake; Bhashini ASR in production
+    rec.interimResults = false;
+    rec.onresult = (e: any) => {
+      const text = e.results[0][0].transcript;
+      set("free_text", (form.free_text ? form.free_text + " " : "") + text);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    setListening(true);
+    rec.start();
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const input = { ...form, full_name: form.full_name?.trim() || null };
+    const input: IntakeInput = {
+      ...form,
+      full_name: form.full_name?.trim() || null,
+      photo_ref: photo,
+      photo_consented: !!photo && photoConsent,
+    };
     const res = onCreate(input);
     setResult(res);
   }
@@ -107,8 +141,24 @@ export function IntakeForm({
         </div>
         <div className="col-span-2 md:col-span-3">
           <label className="label">Distinctive detail / free text</label>
-          <input className="field" placeholder="e.g. green tin trunk, near the Hanuman temple" value={form.free_text ?? ""} onChange={(e) => set("free_text", e.target.value)} />
+          <div className="flex gap-2">
+            <input className="field" placeholder="e.g. green tin trunk, near the Hanuman temple" value={form.free_text ?? ""} onChange={(e) => set("free_text", e.target.value)} />
+            <button type="button" className={`btn !py-1.5 ${listening ? "!border-danger/50 text-danger" : ""}`} onClick={dictate} title="Speak (real-time voice input)">
+              {listening ? "● listening" : "🎤 Speak"}
+            </button>
+          </div>
         </div>
+
+        <div className="col-span-2 md:col-span-3">
+          <PhotoCapture value={photo} onChange={setPhoto} label="Photo (optional, for found persons) — used only to AID human verification" />
+          {photo && (
+            <label className="mt-2 flex items-center gap-2 text-xs text-muted">
+              <input type="checkbox" checked={photoConsent} onChange={(e) => setPhotoConsent(e.target.checked)} />
+              Consent to store this photo for reunification (auto-purged on reunion; never added to any biometric index)
+            </label>
+          )}
+        </div>
+
         <label className="col-span-2 flex items-center gap-2 text-xs text-muted md:col-span-3">
           <input type="checkbox" checked={form.consent_pa} onChange={(e) => set("consent_pa", e.target.checked)} />
           Consent to be named in a PA announcement

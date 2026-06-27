@@ -1,0 +1,37 @@
+# SETU — production stack.
+#
+# IMPORTANT: the runnable demo (matching cascade, FastMCP service functions,
+# federation/sync, PA generation, dashboard, demo runner and the full test
+# suite) depends on NOTHING below — it runs on the Python standard library +
+# SQLite so it works anywhere, offline, with no setup. The packages here are the
+# production targets that the in-repo adapters/mocks are written against; each is
+# a drop-in swap at the call site noted in the corresponding module.
+
+# --- Agent tool surface (setu/mcp_server.py) ---
+fastmcp>=2.0            # FastMCP server exposing the 7 tools
+
+# --- Probabilistic record linkage (setu/matching/fellegi_sunter.py) ---
+# We hand-implement Fellegi-Sunter for full weight transparency; Splink is the
+# production model-fitting swap (EM-trained m/u probabilities).
+splink>=4.0
+
+# --- Name transliteration (setu/matching/names.py) ---
+# AI4Bharat IndicXlit for Indic-script -> Latin transliteration across 10 scripts.
+# (Install per AI4Bharat instructions; transliterate() is the swap point.)
+# ai4bharat-transliteration
+
+# --- Data layer (production) ---
+# Postgres + pgvector replace the SQLite store + the in-module embedding mock.
+psycopg[binary]>=3.1
+pgvector>=0.3
+sentence-transformers>=2.2   # real multilingual embeddings for semantic match
+
+# --- Face re-rank (setu/matching/face.py) — gated, transient, never persisted ---
+# insightface>=0.7           # ArcFace embeddings; left commented to avoid
+# onnxruntime>=1.16          # accidentally pulling heavy biometric deps in CI
+
+# --- Voice + PA (setu/bhashini.py) ---
+requests>=2.31               # Bhashini ASR/TTS REST pipeline
+
+# --- Agentic narration (setu/agent.py) ---
+anthropic>=0.40              # Claude for own-language phrasing of grounded matches

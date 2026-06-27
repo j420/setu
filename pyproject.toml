@@ -1,0 +1,13 @@
+[project]
+name = "setu"
+version = "0.1.0"
+description = "SETU — name-optional, PA-first, human-gated missing-person reunification for Kumbh Mela 2027"
+requires-python = ">=3.10"
+dependencies = []   # runnable core is stdlib-only; see requirements.txt for the production stack
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools]
+packages = ["setu", "setu.matching"]

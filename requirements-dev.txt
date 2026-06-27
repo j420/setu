@@ -1,0 +1,2 @@
+# Everything needed to run the demo + tests is stdlib; only pytest is extra.
+pytest>=8.0

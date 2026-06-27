@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AGE_BANDS,
   CENTERS,
@@ -38,14 +38,25 @@ const EMPTY: IntakeInput = {
 
 export function IntakeForm({
   onCreate,
+  initialPhoto = null,
 }: {
   onCreate: (input: IntakeInput) => { record: PersonRecord; matches: Candidate[]; buffered: boolean };
+  initialPhoto?: string | null;
 }) {
   const [form, setForm] = useState<IntakeInput>(EMPTY);
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoConsent, setPhotoConsent] = useState(false);
   const [listening, setListening] = useState(false);
   const [result, setResult] = useState<{ record: PersonRecord; matches: Candidate[]; buffered: boolean } | null>(null);
+
+  // Carry a photo captured in the hero into the form (and default to "found",
+  // since a photo is logged for someone you've found).
+  useEffect(() => {
+    if (initialPhoto) {
+      setPhoto(initialPhoto);
+      setForm((f) => ({ ...f, record_type: "found" }));
+    }
+  }, [initialPhoto]);
 
   function set<K extends keyof IntakeInput>(k: K, v: IntakeInput[K]) {
     setForm((f) => ({ ...f, [k]: v }));

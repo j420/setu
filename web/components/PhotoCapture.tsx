@@ -32,10 +32,14 @@ export function PhotoCapture({
   value,
   onChange,
   label = "Photo",
+  showPreview = true,
+  large = false,
 }: {
   value: string | null;
   onChange: (dataUrl: string | null) => void;
   label?: string;
+  showPreview?: boolean;
+  large?: boolean;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,20 +91,64 @@ export function PhotoCapture({
     stopCam();
   }
 
-  return (
-    <div>
-      <label className="label">{label}</label>
-      <div className="flex items-start gap-3">
-        <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-xl border border-line bg-ink/60 text-[10px] text-muted">
+  if (large) {
+    return (
+      <div>
+        {label && <label className="label">{label}</label>}
+        <div className="grid aspect-square w-full place-items-center overflow-hidden rounded-xl border border-line bg-ink/70 text-muted">
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="preview" className="h-full w-full object-cover" />
+            <img src={value} alt="captured" className="h-full w-full object-cover" />
           ) : streaming ? (
             <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
           ) : (
-            "no photo"
+            <div className="px-6 text-center">
+              <div className="text-4xl">📷</div>
+              <p className="mt-2 text-sm font-medium text-head">Take or upload a photo</p>
+              <p className="mt-1 text-xs text-muted">Camera or gallery · stays on this device</p>
+            </div>
           )}
         </div>
+        <div className="mt-3 flex flex-wrap justify-center gap-2">
+          <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
+          {!streaming ? (
+            <>
+              <button type="button" className="btn" onClick={() => fileRef.current?.click()}>Upload</button>
+              <button type="button" className="btn" onClick={startCam}>Camera</button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="btn btn-primary" onClick={snap}>Capture</button>
+              <button type="button" className="btn" onClick={stopCam}>Cancel</button>
+            </>
+          )}
+          {value && (
+            <button type="button" className="btn text-danger" onClick={() => onChange(null)}>Remove</button>
+          )}
+        </div>
+        {err && <p className="mt-1 text-center text-xs text-danger">{err}</p>}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {label && <label className="label">{label}</label>}
+      <div className="flex items-start gap-3">
+        {showPreview ? (
+          <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-xl border border-line bg-ink/60 text-[10px] text-muted">
+            {value ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={value} alt="preview" className="h-full w-full object-cover" />
+            ) : streaming ? (
+              <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
+            ) : (
+              "no photo"
+            )}
+          </div>
+        ) : (
+          streaming && <video ref={videoRef} className="hidden" muted playsInline />
+        )}
         <div className="flex flex-wrap gap-2">
           <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
           <button type="button" className="btn !py-1.5" onClick={() => fileRef.current?.click()}>

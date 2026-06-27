@@ -8,47 +8,48 @@
 
 html,
 body {
-  background: radial-gradient(1200px 600px at 20% -10%, #1a1f3d 0%, #0b0e1a 55%);
-  color: #e7e9f3;
+  background-color: #f5f3ee;
+  background-image: radial-gradient(900px 500px at 85% -15%, #efe7df 0%, rgba(245, 243, 238, 0) 60%);
+  color: #28261f;
   min-height: 100%;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a3052 transparent;
+  scrollbar-color: #d8d3c6 transparent;
 }
 *::-webkit-scrollbar {
   height: 8px;
   width: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #2a3052;
+  background: #d8d3c6;
   border-radius: 8px;
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-line bg-panel/80 backdrop-blur p-5 shadow-lg shadow-black/20;
+    @apply rounded-2xl border border-line bg-panel p-5 shadow-soft;
   }
   .pill {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium;
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-panel2 px-4 py-2 text-sm font-medium transition hover:border-accent/60 hover:bg-accent2/40 disabled:opacity-40 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-panel px-4 py-2 text-sm font-medium text-head transition hover:border-accent/50 hover:bg-panel2 disabled:opacity-40 disabled:cursor-not-allowed;
   }
   .btn-primary {
-    @apply border-accent/50 bg-accent2 hover:bg-accent text-white;
+    @apply border-accent2 bg-accent2 text-white hover:bg-accent hover:border-accent;
   }
   .field {
-    @apply w-full rounded-xl border border-line bg-ink/60 px-3 py-2 text-sm outline-none focus:border-accent/60;
+    @apply w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-head outline-none transition placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/15;
   }
   .label {
     @apply mb-1 block text-xs font-medium text-muted;
   }
   .tab {
-    @apply rounded-xl px-3.5 py-2 text-sm font-medium text-muted transition hover:text-white;
+    @apply rounded-xl px-3.5 py-2 text-sm font-medium text-muted transition hover:text-head;
   }
   .tab-active {
-    @apply bg-panel2 text-white shadow-inner;
+    @apply bg-white text-head shadow-soft;
   }
 }

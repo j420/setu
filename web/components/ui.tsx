@@ -20,7 +20,7 @@ export function Stat({
           ? "text-danger"
           : accent === "accent"
             ? "text-accent"
-            : "text-white";
+            : "text-head";
   return (
     <div className="card !p-4 min-w-[140px] flex-1">
       <div className={`text-2xl font-semibold tabular-nums ${color}`}>{value}</div>
@@ -60,7 +60,7 @@ export function SectionTitle({
   return (
     <div className="mb-3 flex items-start justify-between gap-3">
       <div>
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-[#aeb6e8]">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-head">
           <span>{icon}</span>
           {title}
         </h2>

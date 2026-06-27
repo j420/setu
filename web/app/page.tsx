@@ -10,6 +10,7 @@ import { IntakeForm } from "@/components/IntakeForm";
 import { PAConsole } from "@/components/PAConsole";
 import { DedupView } from "@/components/DedupView";
 import { Heatmap } from "@/components/Heatmap";
+import { Hero } from "@/components/Hero";
 
 type Tab = "control" | "intake" | "pa";
 
@@ -22,6 +23,12 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 export default function Page() {
   const setu = useSetu();
   const [tab, setTab] = useState<Tab>("intake");
+  const [intakePhoto, setIntakePhoto] = useState<string | null>(null);
+
+  function scrollToForm() {
+    setTab("intake");
+    setTimeout(() => document.getElementById("intake-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
 
   const queue = useMemo(() => buildQueue(setu.persons), [setu.persons]);
   const m = useMemo(() => metrics(setu.persons, queue), [setu.persons, queue]);
@@ -100,12 +107,21 @@ export default function Page() {
         )}
 
         {tab === "intake" && (
-          <div className="grid gap-5 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <IntakeForm onCreate={setu.createRecord} />
-            </div>
-            <div>
-              <MatchQueue queue={queue} onConfirm={setu.confirmReunion} />
+          <div className="space-y-5">
+            <Hero
+              onContinueWithPhoto={(photo) => {
+                setIntakePhoto(photo);
+                scrollToForm();
+              }}
+              onLogDetails={scrollToForm}
+            />
+            <div id="intake-form" className="grid gap-5 lg:grid-cols-3">
+              <div className="lg:col-span-2">
+                <IntakeForm onCreate={setu.createRecord} initialPhoto={intakePhoto} />
+              </div>
+              <div>
+                <MatchQueue queue={queue} onConfirm={setu.confirmReunion} />
+              </div>
             </div>
           </div>
         )}

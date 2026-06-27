@@ -13,13 +13,13 @@ export function Header({
   onToggle: (next: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-ink/70 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-line bg-bg/85 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent2 text-lg">🌉</div>
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent2 text-lg text-white shadow-soft">🌉</div>
           <div>
-            <h1 className="text-base font-semibold leading-tight">
-              SETU <span className="text-muted">· Reunification Control Room</span>
+            <h1 className="font-serif text-lg font-semibold leading-tight text-head">
+              SETU <span className="font-sans text-sm font-normal text-muted">· Reunification Control Room</span>
             </h1>
             <p className="text-[11px] text-muted">
               Nashik–Trimbakeshwar Kumbh 2027 · name-optional · PA-first · human-gated · live data

@@ -92,7 +92,7 @@ export function VerifyDialog({
       <div className="card w-full max-w-lg">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-semibold">Human verification — the handover gate</h3>
-          <button className="text-muted hover:text-white" onClick={onClose}>
+          <button className="text-muted hover:text-head" onClick={onClose}>
             ✕
           </button>
         </div>
@@ -133,7 +133,7 @@ export function VerifyDialog({
             {/* Server-side photo verification — advisory aid, never decisive */}
             <div className="mt-3 rounded-xl border border-line bg-ink/40 p-3">
               <div className="mb-2 flex items-center gap-2">
-                <span className="text-xs font-medium text-[#aeb6e8]">📷 Photo check (server-side, advisory)</span>
+                <span className="text-xs font-medium text-head">📷 Photo check (server-side, advisory)</span>
                 <Pill tone="muted">never auto-confirms</Pill>
               </div>
               <div className="flex items-start gap-4">

@@ -89,7 +89,9 @@ class MatchScore:
 def _logistic(bits: float) -> float:
     # Map total bits of evidence to a (0,1) probability. The /2 keeps the curve
     # gentle so 6 bits ~ 0.95, matching the high-confidence threshold.
-    return 1.0 / (1.0 + math.exp(-bits / 2.0))
+    # Clamp the exponent so pathological inputs can never overflow math.exp.
+    x = max(-60.0, min(60.0, -bits / 2.0))
+    return 1.0 / (1.0 + math.exp(x))
 
 
 def _time_close(a: PersonRecord, b: PersonRecord, hours: float = 2.0) -> bool | None:

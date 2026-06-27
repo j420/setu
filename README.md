@@ -100,7 +100,27 @@ when offline — reconciling idempotently on reconnect.
 
 ---
 
-## Run it (no setup, no keys, stdlib only)
+## Web control room (Next.js, deploys on Vercel)
+
+A polished, **offline-first** control-room UI lives in [`web/`](web/). The entire
+matching engine is ported to TypeScript (`web/lib/setu/`) and runs in the
+browser/edge — no server, no database — so it deploys cleanly on Vercel and keeps
+working with zero connectivity. The Python package here stays the canonical
+reference; the TS engine is independently verified by 25 tests.
+
+```bash
+cd web && npm install && npm run dev     # http://localhost:3000
+npm run build && npm test                # production build + engine tests
+```
+
+Deploy: import the repo in Vercel and set the **Root Directory to `web`** (see
+[`web/README.md`](web/README.md)). The UI includes live metrics, the match queue
+with weight-grounded explanations and the human verification dialog,
+name-optional voice intake, the multilingual PA console, dedup view, hotspot
+heatmap, an online/offline toggle, and a one-click guided demo of the full Sita
+Devi reunion + offline re-sync + handover-gate proofs.
+
+## Run the Python core (no setup, no keys, stdlib only)
 
 ```bash
 # 1) the full end-to-end demo: the Sita Devi reunion + offline re-sync + metrics

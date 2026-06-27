@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CENTERS,
   Candidate,
+  NoteRecord,
   PersonRecord,
   RecordType,
   Store,
-  generate,
   makePerson,
   newId,
   nowIso,
@@ -15,6 +15,39 @@ import {
   DEFAULT_RETENTION_DAYS,
 } from "./setu";
 import { HumanAttestation } from "./setu/privacy";
+
+// Real records entered at this node are persisted locally so the operator's
+// working set survives reloads. NO synthetic/seed/random data is ever loaded —
+// the store starts empty and is populated only by real intake (or, in
+// production, by ingestion from kiosks/IVR/the federation API).
+const STORAGE_KEY = "setu.records.v1";
+
+interface Persisted {
+  persons: PersonRecord[];
+  notes: NoteRecord[];
+}
+
+function loadPersisted(store: Store) {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw) as Persisted;
+    store.importRecords({ persons: data.persons ?? [], notes: data.notes ?? [] });
+  } catch {
+    /* ignore corrupt cache */
+  }
+}
+
+function savePersisted(store: Store) {
+  if (typeof window === "undefined") return;
+  try {
+    const { persons, notes } = store.exportAll();
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ persons, notes }));
+  } catch {
+    /* quota / serialization issues are non-fatal */
+  }
+}
 
 export interface IntakeInput {
   center: string;
@@ -60,20 +93,31 @@ function buildRecord(input: IntakeInput): PersonRecord {
   });
 }
 
-export function useSetu(seedCount = 400) {
+export function useSetu() {
   const storeRef = useRef<Store | null>(null);
   const pendingRef = useRef<PersonRecord[]>([]);
   const [online, setOnline] = useState(true);
   const [tick, setTick] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
 
+  // Start EMPTY — no seed, no random data.
   if (storeRef.current === null) {
-    const store = new Store("central_control");
-    const ds = generate(seedCount, 7);
-    for (const rec of ds.records) store.putPerson(rec);
-    storeRef.current = store;
+    storeRef.current = new Store("central_control");
   }
   const store = storeRef.current;
+
+  // Hydrate real records from localStorage on the client (post-SSR), then
+  // persist on every change.
+  useEffect(() => {
+    loadPersisted(store);
+    setHydrated(true);
+    refresh();
+  }, [store, refresh]);
+
+  useEffect(() => {
+    if (hydrated) savePersisted(store);
+  }, [store, hydrated, tick]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const persons = useMemo(() => store.allPersons(), [store, tick]);
@@ -131,16 +175,25 @@ export function useSetu(seedCount = 400) {
     [store],
   );
 
+  const clearAll = useCallback(() => {
+    if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
+    storeRef.current = new Store("central_control");
+    pendingRef.current = [];
+    refresh();
+  }, [refresh]);
+
   return {
     store,
     persons,
     online,
+    hydrated,
     pendingCount: pendingRef.current.length,
     createRecord,
     toggleOnline,
     flushPending,
     confirmReunion,
     matchesFor,
+    clearAll,
     refresh,
     tick,
   };

@@ -117,8 +117,10 @@ Deploy: import the repo in Vercel and set the **Root Directory to `web`** (see
 [`web/README.md`](web/README.md)). The UI includes live metrics, the match queue
 with weight-grounded explanations and the human verification dialog,
 name-optional voice intake, the multilingual PA console, dedup view, hotspot
-heatmap, an online/offline toggle, and a one-click guided demo of the full Sita
-Devi reunion + offline re-sync + handover-gate proofs.
+heatmap, and an online/offline toggle. The deployed app starts **empty and
+processes only real intake** (live) — no seed or random data; the synthetic
+generator is used solely by the test suites. The scripted end-to-end walkthrough
+lives in the Python CLI demo below.
 
 ## Run the Python core (no setup, no keys, stdlib only)
 

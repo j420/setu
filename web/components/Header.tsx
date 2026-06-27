@@ -22,7 +22,7 @@ export function Header({
               SETU <span className="text-muted">· Reunification Control Room</span>
             </h1>
             <p className="text-[11px] text-muted">
-              Nashik–Trimbakeshwar Kumbh 2027 · name-optional · PA-first · human-gated · synthetic demo data
+              Nashik–Trimbakeshwar Kumbh 2027 · name-optional · PA-first · human-gated · live data
             </p>
           </div>
         </div>

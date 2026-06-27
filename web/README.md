@@ -17,8 +17,16 @@ reference; this engine is independently verified by its own test suite.
 - `app/` + `components/` — the dashboard: live metrics, the match queue with
   weight-grounded explanations and the human verification dialog, voice-first
   name-optional intake, the multilingual PA console, dedup view, hotspot
-  heatmap, an online/offline toggle (store-and-forward), and a guided end-to-end
-  demo (the Sita Devi reunion + offline cut & re-sync + gate-bypass proofs).
+  heatmap, and an online/offline toggle (store-and-forward).
+
+### Live data only — no seed, no random data
+
+The deployed app starts **empty**. The queue, dedup view, heatmap and metrics
+populate only from **real intake** logged on this node (or, in production, from
+ingestion via kiosks/IVR/the federation API). Records entered on a node are
+persisted to `localStorage` so the operator's working set survives reloads;
+"Clear" wipes them. The synthetic dataset generator (`lib/setu/dataset.ts`) is
+retained **only** for the automated test suite — it is never loaded by the app.
 
 ## Run locally
 
